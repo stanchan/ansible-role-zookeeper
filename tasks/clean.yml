@@ -1,0 +1,21 @@
+---
+- name: stop and disable zookeeper service
+  systemd:
+    name: zookeeper
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+
+- name: remove zookeeper binaries
+  file:
+    path: "{{ zookeeper_home }}"
+    state: absent
+
+- name: remove jmx_exporter
+  file:
+    path: "{{ jmx_exporter_home }}"
+    state: absent
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes

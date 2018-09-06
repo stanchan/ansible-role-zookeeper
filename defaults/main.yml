@@ -1,0 +1,148 @@
+---
+# defaults file for zookeeper
+ansible_host_ip_force_update: yes
+debian_easy_install_bin: /usr/bin/easy_install
+redhat_easy_install_bin: /bin/easy_install
+zookeeper_clean: no
+zookeeper_required_packages:
+  - python-dev
+  - python-setuptools
+  - unzip
+
+systemd_service_dir: /etc/systemd/system
+zookeeper_service_name: zookeeper
+zookeeper_syslog_id: "{{ zookeeper_service_name }}"
+zookeeper_time_start_sec: 'infinity'
+zookeeper_time_stop_sec: 30
+zookeeper_pid_file: /run/zookeeper/zookeeper_server.pid
+
+zookeeper_user: zookeeper
+#zookeeper_user_id: null
+zookeeper_group: zookeeper
+#zookeeper_group_id: null
+zookeeper_open_files: 65356
+zookeeper_nproc: 65356
+
+zookeeper_version: 3.4.13
+zookeeper_package_file: "zookeeper-{{ zookeeper_version }}.tar.gz"
+zookeeper_package_url: "http://apache.mirrors.lucidnetworks.net/zookeeper/zookeeper-{{ zookeeper_version }}/{{ zookeeper_package_file }}"
+zookeeper_validate_certs: yes
+zookeeper_force_deploy: no
+zookeeper_release_checksums:
+  zookeeper-3.4.13.tar.gz: "sha256:7ced798e41d2027784b8fd55c908605ad5bd94a742d5dab2506be8f94770594d"
+
+zookeeper_home: /opt/zookeeper
+zookeeper_release_root: "{{ zookeeper_home }}/releases"
+zookeeper_conf_dir: "{{ zookeeper_home }}/{{ zookeeper_version }}/conf"
+zookeeper_data_dir: "{{ zookeeper_home }}/data"
+zookeeper_logs_dir: "/var/log/zookeeper"
+zookeeper_logs_prop: INFO,ROLLINGFILE
+zookeeper_jvm_opts: "-Xmx256m -Xms256m -Djava.net.preferIPv4Stack=true -javaagent:{{ jmx_exporter_home }}/{{ jmx_exporter_agent_jar }}={{ zookeeper_jmx_exporter_port }}:{{ jmx_exporter_configs['zk']['file'] }}"
+
+# list of inventory_hostname or list of dict of host + id... add an ip to override inventory lookup
+zookeeper_hosts:
+  - host: "{{ inventory_hostname }}"
+    id: 1
+
+zookeeper_netif: ansible_eth0
+
+zookeeper_env: {}
+
+zookeeper_client_port: 2181
+zookeeper_connect_port: 2888
+zookeeper_elect_port: 3888
+
+zookeeper_tick_time: 2000
+zookeeper_init_limit: 10
+zookeeper_sync_limit: 5
+zookeeper_rolling_log_file_max_size: 100MB
+zookeeper_rolling_log_file_max_count: 10
+zookeeper_autopurge_purge_interval: 1
+zookeeper_autopurge_snap_retain_count: 10
+zookeeper_max_client_connections: 800
+
+apt_cache_valid_time: 600
+apt_recv_key_server: hkp://keyserver.ubuntu.com:80
+apt_recv_key: EEA14886
+apt_java_repo: "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
+install_java: "true"
+java_security_policies: []
+java_home: "/usr/lib/jvm/java-8-oracle"
+
+zookeeper_jmx_enabled: no
+zookeeper_jmx_port: 10081
+zookeeper_jmx_local_only: 'false'
+zookeeper_jmx_auth: 'false'
+zookeeper_jmx_ssl: 'false'
+zookeeper_jmx_log_disable: 'true'
+
+zookeeper_jmx_exporter_deploy: no
+zookeeper_jmx_exporter_port: 9081
+jmx_exporter_version: 0.3.1
+jmx_exporter_agent_jar: "jmx_prometheus_javaagent-{{ jmx_exporter_version }}.jar"
+jmx_exporter_agent_jar_url: "http://central.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/{{ jmx_exporter_version }}/{{ jmx_exporter_agent_jar }}"
+jmx_exporter_release_checksums:
+  jmx_prometheus_javaagent-0.3.1.jar: "sha1:ae9db209d5c3955bf4635bf91bde48869dfa5232"
+
+jmx_exporter_home: /opt/jmx_prometheus_agent
+jmx_exporter_release_root: "{{ jmx_exporter_home }}/releases"
+jmx_exporter_user: root
+jmx_exporter_group: root
+
+jmx_exporter_configs:
+  default:
+    file: "{{ jmx_exporter_home }}/config-default.yaml"
+    config:
+      startDelaySeconds: 0
+      ssl: false
+      lowercaseOutputName: true
+      lowercaseOutputLabelNames: true
+      whitelistObjectNames: "{{ jmx_exporter_whitelist }}"
+      blacklistObjectNames: []
+      rules: "{{ jmx_exporter_default_rules }}"
+  zk:
+    file: "{{ jmx_exporter_home }}/config-zk.yaml"
+    config:
+      startDelaySeconds: 0
+      ssl: false
+      lowercaseOutputName: true
+      lowercaseOutputLabelNames: true
+      whitelistObjectNames: "{{ jmx_exporter_zk_whitelist }}"
+      blacklistObjectNames: []
+      rules: "{{ jmx_exporter_zk_rules }}"
+
+jmx_exporter_default_rules:
+  - pattern: '.*'
+
+jmx_exporter_jvm_rules:
+  - pattern: 'java.lang.*'
+
+jmx_exporter_zk_rules:
+  - pattern: 'org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+)><>(.+):'
+    name: "zookeeper_$2"
+  - pattern: 'org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+)><>([a-zA-Z0-9]+):'
+    name: "zookeeper_$3"
+    labels:
+      replicaId: "$2"
+  - pattern: 'org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+)><>([a-zA-Z0-9]+):'
+    name: "zookeeper_$4"
+    labels:
+      replicaId: "$2"
+      memberType: "$3"
+  - pattern: 'org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+), name3=(\w+)><>([a-zA-Z0-9]+):'
+    name: "zookeeper_$4_$5"
+    labels:
+      replicaId: "$2"
+      memberType: "$3"
+
+jmx_exporter_whitelist:
+  - "java.lang:type=GarbageCollector,name=*"
+  - "java.lang:type=Memory"
+  - "java.lang:type=OperatingSystem"
+  - "java.lang:type=Threading"
+
+jmx_exporter_zk_whitelist:
+  - "org.apache.ZooKeeperService:name0=*"
+  - "org.apache.ZooKeeperService:name0=*,name1=*"
+  - "org.apache.ZooKeeperService:name0=*,name1=*,name2=*"
+

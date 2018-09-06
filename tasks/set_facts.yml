@@ -1,0 +1,6 @@
+---
+- name: set ansible_host_ip
+  set_fact:
+    ansible_host_ip: "{{ hostvars[inventory_hostname][zookeeper_netif]['ipv4']['address'] }}"
+    cacheable: true
+  when: ansible_host_ip is not defined or ansible_host_ip_force_update

@@ -1,0 +1,7 @@
+{{ ansible_managed | comment }}
+
+{% if zookeeper_env is defined %}
+{% for k, v in zookeeper_env.items() | sort %}
+{{ k }}={{ v }}
+{% endfor %}
+{% endif %}

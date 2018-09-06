@@ -1,0 +1,44 @@
+[Unit]
+Description=ZooKeeper
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory={{ zookeeper_home }}
+User={{ zookeeper_user }}
+Group={{ zookeeper_group }}
+ExecStart={{ zookeeper_home }}/bin/zkServer.sh start
+ExecReload={{ zookeeper_home }}/bin/zkServer.sh restart
+ExecStop={{ zookeeper_home }}/bin/zkServer.sh stop
+SyslogIdentifier={{ zookeeper_syslog_id }}
+PIDFile={{ zookeeper_pid_file }}
+# To use a specific JVM, specify the JAVA_HOME directory:
+Environment="JAVA_HOME={{ java_home }}"
+Environment="ZOOKEEPER_HOME={{ zookeeper_home }}"
+Environment="ZOOPIDFILE={{ zookeeper_pid_file }}"
+Environment="ZOO_LOG_DIR={{ zookeeper_logs_dir }}"
+Environment="ZOO_LOG4J_PROP={{ zookeeper_logs_prop }}"
+{% if zookeeper_jmx_enabled %}
+Environment="JMXDISABLE=false"
+Environment="JMXPORT={{ zookeeper_jmx_port }}"
+Environment="JMXLOCALONLY={{ zookeeper_jmx_local_only }}
+Environment="JMXAUTH={{ zookeeper_jmx_auth }}"
+Environment="JMXSSL={{ zookeeper_jmx_ssl }}"
+Environment="JMXLOG4J={{ zookeeper_jmx_log_disable }}"
+{% else %}
+Environment="JMXDISABLE=true"
+{% endif %}
+Environment="JVMFLAGS={{ zookeeper_jvm_opts }}"
+LimitNOFILE={{ zookeeper_open_files }}
+LimitNPROC={{ zookeeper_nproc }}
+RemainAfterExit=no
+Restart=on-failure
+RestartSec=5s
+
+# Disable TimeoutStartSec, because the service does not signal completion
+TimeoutStartSec={{ zookeeper_time_start_sec }}
+TimeoutStopSec={{ zookeeper_time_stop_sec }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+---
+- name: Create zookeeper group
+  group:
+    name: "{{ zookeeper_group }}"
+    gid: "{{ zookeeper_group_id | default(omit) }}"
+    state: present
+
+- name: Create zookeeper user
+  user:
+    name: "{{ zookeeper_user }}"
+    uid: "{{ zookeeper_user_id | default(omit) }}"
+    state: present
+    comment: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    home: "{{ zookeeper_home }}"
+    create_home: no
+    system: no
+
+- name: Create zookeeper directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    recurse: yes
+  loop:
+    - "{{ zookeeper_home }}"
+    - "{{ zookeeper_home }}/{{ zookeeper_version }}"
+    - "{{ zookeeper_release_root }}"
+    - "{{ zookeeper_data_dir }}"
+    - "{{ zookeeper_logs_dir }}"
+    - "{{ zookeeper_pid_file | dirname }}"

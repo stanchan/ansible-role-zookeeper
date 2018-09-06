@@ -1,0 +1,24 @@
+---
+- name: Check for systemd service
+  set_fact:
+    is_systemd: yes
+  when: (ansible_os_family  == "RedHat" and ansible_distribution_major_version >= "7") or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "16") or (ansible_distribution == "Debian" and ansible_distribution_major_version >= "8")
+
+- block:
+  - name: Create zookeeper systemd service
+    template:
+      src: zookeeper.service.j2
+      dest: "{{ systemd_service_dir }}/{{ zookeeper_service_name }}.service"
+      owner: root
+      group: root
+      mode: 0755
+    notify:
+      - restart zookeeper
+
+  - name: Enable zookeeper systemd service
+    systemd:
+      name: "{{ zookeeper_service_name }}"
+      enabled: yes
+      daemon-reload: yes
+      state: started
+  when: is_systemd

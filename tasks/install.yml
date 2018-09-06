@@ -1,0 +1,81 @@
+---
+- name: Check zookeeper deployed version
+  stat:
+    path: "{{ zookeeper_home }}/{{ zookeeper_version }}/zookeeper-{{ zookeeper_version }}.jar"
+  register: zookeeper_bin
+
+- name: Download zookeeper package
+  get_url:
+    url: "{{ zookeeper_package_url }}"
+    dest: "{{ zookeeper_release_root }}/{{ zookeeper_package_file }}"
+    mode: 0444
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    checksum: "{{ zookeeper_release_checksums[zookeeper_package_file] }}"
+    validate_certs: "{{ zookeeper_validate_certs | default(omit) }}"
+    force: "{{ zookeeper_force_download | default ('no') }}"
+
+- name: Deploy zookeeper package
+  unarchive:
+    src: "{{ zookeeper_release_root }}/{{ zookeeper_package_file }}"
+    dest: "{{ zookeeper_home }}/{{ zookeeper_version }}"
+    remote_src: yes
+    keep_newer: yes
+    extra_opts: ['--strip-components=1']
+  when: (not zookeeper_bin.stat.exists) or zookeeper_force_deploy
+  notify: restart zookeeper
+
+- name: Link zookeeper latest
+  file:
+    src: "{{ zookeeper_home }}/{{ zookeeper_version }}"
+    dest: "{{ zookeeper_home }}/latest"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    state: link
+
+- name: Link zookeeper bin
+  file:
+    src: "{{ zookeeper_home }}/latest/bin"
+    dest: "{{ zookeeper_home }}/bin"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    state: link
+
+- name: Link zookeeper conf
+  file:
+    src: "{{ zookeeper_home }}/latest/conf"
+    dest: "{{ zookeeper_home }}/conf"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    state: link
+
+- name: Check target logs directory
+  stat:
+    path: "{{ zookeeper_home }}/logs"
+  register: target_logs_check
+
+- name: Migrate logs directory contents if not link
+  shell: "mv {{ zookeeper_home }}/logs/* {{ zookeeper_logs_dir }}/"
+  when: target_logs_check.stat.exists and not target_logs_check.stat.islnk
+
+- name: Delete logs directory if not link
+  file:
+    path: "{{ zookeeper_home }}/logs"
+    state: absent
+  when: target_logs_check.stat.exists and not target_logs_check.stat.islnk
+
+- name: Link zookeeper logs
+  file:
+    src: "{{ zookeeper_logs_dir }}"
+    dest: "{{ zookeeper_home }}/logs"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    state: link
+
+- name: Change zookeeper directory permissions and ownership
+  file:
+    path: "{{ zookeeper_home }}"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes

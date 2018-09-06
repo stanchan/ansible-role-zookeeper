@@ -1,0 +1,35 @@
+---
+- name: Set jmx_exporter_zk_whitelist
+  set_fact:
+    jmx_exporter_zk_whitelist: "{{ (jmx_exporter_zk_whitelist + jmx_exporter_whitelist) | default(jmx_exporter_whitelist) }}"
+
+- name: Set jmx_exporter_zk_rules
+  set_fact:
+    jmx_exporter_zk_rules: "{{ jmx_exporter_zk_rules + jmx_exporter_jvm_rules }}"
+
+- name: Create jmx_exporter agent directory
+  file:
+    path: "{{ jmx_exporter_home }}"
+    state: directory
+    owner: "{{ jmx_exporter_user }}"
+    group: "{{ jmx_exporter_group }}"
+    recurse: yes
+
+- name: Download jmx_exporter agent jar
+  get_url:
+    url: "{{ jmx_exporter_agent_jar_url }}"
+    dest: "{{ jmx_exporter_home }}/{{ jmx_exporter_agent_jar }}"
+    mode: 0444
+    owner: "{{ jmx_exporter_user }}"
+    group: "{{ jmx_exporter_group }}"
+    checksum: "{{ jmx_exporter_release_checksums[jmx_exporter_agent_jar] }}"
+    validate_certs: "{{ jmx_exporter_validate_certs | default(omit) }}"
+    force: "{{ jmx_exporter_force_download | default ('no') }}"
+
+- name: Deploy jmx_exporter agent configuration file
+  template:
+    src: jmx_exporter-config.yaml.j2
+    dest: "{{ item.value.file }}"
+    mode: 0644
+  with_dict: "{{ jmx_exporter_configs }}"
+  notify: restart zookeeper

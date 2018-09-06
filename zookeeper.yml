@@ -1,0 +1,12 @@
+- name: Deploy zookeeper role
+  hosts: all
+  vars:
+    zookeeper_hosts:
+      - host: zookeeper.shift-labs.com
+        id: 1
+      - host: zookeeper2.shift-labs.com
+        id: 2
+      - host: zookeeper3.shift-labs.com
+        id: 3
+  roles:
+    - zookeeper

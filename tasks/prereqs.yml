@@ -1,0 +1,38 @@
+---
+- name: Install zookeeper dependent packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ zookeeper_required_packages }}"
+
+- name: check pip version
+  shell: pip --version | cut -d" " -f2
+  register: pip_check
+  ignore_errors: yes
+  changed_when: no
+
+- name: check pip latest
+  set_fact:
+    pip_latest: "{{ lookup('pypi_version', 'pip') }}"
+
+- name: install latest pip
+  easy_install:
+    name: pip
+    executable: "{{ redhat_easy_install_bin }}"
+    state: latest
+  when: ansible_os_family in [ "RedHat", "ClearOS"] and pip_check.stdout.find(pip_latest) == -1
+
+- name: install latest pip
+  easy_install:
+    name: pip
+    executable: "{{ debian_easy_install_bin }}"
+    state: latest
+  when: ansible_os_family in [ "Debian" ] and pip_check.stdout.find(pip_latest) == -1
+
+- name: Install zookeeper pip packages
+  pip:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - jmespath
+    - kazoo

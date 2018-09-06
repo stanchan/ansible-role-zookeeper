@@ -1,0 +1,30 @@
+---
+# tasks file for zookeeper
+
+- name: Cleanup zookeeper
+  include_tasks: clean.yml
+  when: zookeeper_clean
+
+- name: Set facts
+  include_tasks: set_facts.yml
+
+- name: Setup prereqs
+  include_tasks: prereqs.yml
+
+- name: Setup java
+  include_tasks: java.yml
+
+- name: Setup setup
+  include_tasks: setup.yml
+
+- name: Install zookeeper
+  include_tasks: install.yml
+
+- name: Setup zookeeper
+  include_tasks: config.yml
+
+- name: Install jmx exporter
+  include_tasks: jmx_exporter.yml
+
+- name: Setup zookeeper service
+  include_tasks: service.yml

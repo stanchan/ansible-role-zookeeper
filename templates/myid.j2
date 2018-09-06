@@ -1,0 +1,11 @@
+{% for host in zookeeper_hosts %}
+{% if host.host is defined %}
+{% if host.host == inventory_hostname %}
+{{ host.id }}
+{% endif %}
+{% else %}
+{% if host == inventory_hostname %}
+{{ loop.index }}
+{% endif %}
+{% endif %}
+{% endfor %}

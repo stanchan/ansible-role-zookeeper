@@ -1,0 +1,36 @@
+---
+- name: Deploy zookeeper myid file
+  template:
+    src: myid.j2
+    dest: "{{ zookeeper_data_dir }}/myid"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  notify:
+    - restart zookeeper
+
+- name: Deploy zookeeper config file
+  template:
+    src: zoo.cfg.j2
+    dest: "{{ zookeeper_conf_dir }}/zoo.cfg"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  notify:
+    - restart zookeeper
+
+- name: Deploy zookeeper filezookeeper-env.sh file
+  template:
+    src: zookeeper-env.sh.j2
+    dest: "{{ zookeeper_conf_dir }}/zookeeper-env.sh"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  notify:
+    - restart zookeeper
+
+- name: Deploy zookeeper log4j file
+  template:
+    src: log4j.properties.j2
+    dest: "{{ zookeeper_conf_dir }}/log4j.properties"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  notify:
+    - restart zookeeper

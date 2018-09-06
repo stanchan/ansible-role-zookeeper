@@ -1,0 +1,36 @@
+{{ ansible_managed | comment }}
+
+tickTime={{ zookeeper_tick_time }}
+initLimit={{ zookeeper_init_limit }}
+syncLimit={{ zookeeper_sync_limit }}
+
+dataDir={{ zookeeper_data_dir }}
+dataLogDir={{ zookeeper_logs_dir }}
+
+clientPort={{ zookeeper_client_port }}
+maxClientCnxns={{ zookeeper_max_client_connections }}
+
+{% if zookeeper_autopurge_purge_interval > 0 %}
+autopurge.purgeInterval={{ zookeeper_autopurge_purge_interval }}
+autopurge.snapRetainCount={{ zookeeper_autopurge_snap_retain_count }}
+{% endif %}
+
+{% for host in zookeeper_hosts %}
+{% if host.host is defined %}
+{% if host.ip is defined %}
+server.{{ host.id }}={{ host.ip }}:{{ zookeeper_connect_port }}:{{ zookeeper_elect_port }}
+{% else %}
+{% if host.host == inventory_hostname %}
+server.{{ loop.index }}=0.0.0.0:{{ zookeeper_connect_port }}:{{ zookeeper_elect_port }}
+{% else %}
+server.{{ loop.index }}={{ hostvars[host.host]['ansible_host_ip'] }}:{{ zookeeper_connect_port }}:{{ zookeeper_elect_port }}
+{% endif %}
+{% endif %}
+{% else %}
+{% if host == inventory_hostname %}
+server.{{ loop.index }}=0.0.0.0:{{ zookeeper_connect_port }}:{{ zookeeper_elect_port }}
+{% else %}
+server.{{ loop.index }}={{ hostvars[host.host]['ansible_host_ip'] }}:{{ zookeeper_connect_port }}:{{ zookeeper_elect_port }}
+{% endif %}
+{% endif %}
+{% endfor %}
