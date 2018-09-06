@@ -1,0 +1,10 @@
+---
+- name: Wait Zookeeper znode
+  znode:
+    hosts: "127.0.0.1:{{ zookeeper_client_port }}"
+    name: "{{ zookeeper_check_znode }}"
+    op: wait
+    timeout: "{{ zookeeper_check_wait_timeout | int }}"
+  delegate_to: "{{ inventory_hostname }}"
+  become: no
+  run_once: yes

@@ -9,6 +9,14 @@ zookeeper_required_packages:
   - python-setuptools
   - unzip
 
+apt_cache_valid_time: 600
+apt_recv_key_server: hkp://keyserver.ubuntu.com:80
+apt_recv_key: EEA14886
+apt_java_repo: "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
+install_java: "true"
+java_security_policies: []
+java_home: "/usr/lib/jvm/java-8-oracle"
+
 systemd_service_dir: /etc/systemd/system
 zookeeper_service_name: zookeeper
 zookeeper_syslog_id: "{{ zookeeper_service_name }}"
@@ -61,13 +69,8 @@ zookeeper_autopurge_purge_interval: 1
 zookeeper_autopurge_snap_retain_count: 10
 zookeeper_max_client_connections: 800
 
-apt_cache_valid_time: 600
-apt_recv_key_server: hkp://keyserver.ubuntu.com:80
-apt_recv_key: EEA14886
-apt_java_repo: "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
-install_java: "true"
-java_security_policies: []
-java_home: "/usr/lib/jvm/java-8-oracle"
+zookeeper_check_wait_timeout: 300
+zookeeper_check_znode: "/"
 
 zookeeper_jmx_enabled: no
 zookeeper_jmx_port: 10081
