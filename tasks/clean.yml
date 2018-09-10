@@ -6,10 +6,16 @@
     enabled: no
   ignore_errors: yes
 
-- name: remove zookeeper binaries
+- name: "remove zookeeper directory {{ item }}"
   file:
-    path: "{{ zookeeper_home }}"
+    path: "{{ item }}"
     state: absent
+  loop:
+    - "{{ zookeeper_home }}"
+    - "{{ zookeeper_release_root }}"
+    - "{{ zookeeper_data_dir }}"
+    - "{{ zookeeper_logs_dir }}"
+    - "{{ zookeeper_pid_file | dirname }}"
 
 - name: remove jmx_exporter
   file:
