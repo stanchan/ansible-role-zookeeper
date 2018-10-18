@@ -1,20 +1,12 @@
 ---
 # defaults file for zookeeper
 ansible_host_ip_force_update: yes
-debian_easy_install_bin: /usr/bin/easy_install
-redhat_easy_install_bin: /bin/easy_install
 zookeeper_clean: no
 zookeeper_required_packages:
   - python-dev
   - python-setuptools
   - unzip
 
-apt_cache_valid_time: 600
-apt_recv_key_server: hkp://keyserver.ubuntu.com:80
-apt_recv_key: EEA14886
-apt_java_repo: "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
-install_java: "true"
-java_security_policies: []
 java_home: "/usr/lib/jvm/java-8-oracle"
 
 systemd_service_dir: /etc/systemd/system
