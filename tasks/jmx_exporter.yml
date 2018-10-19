@@ -31,5 +31,6 @@
     src: jmx_exporter-config.yaml.j2
     dest: "{{ item.value.file }}"
     mode: 0644
+
   with_dict: "{{ jmx_exporter_configs }}"
   notify: restart zookeeper
