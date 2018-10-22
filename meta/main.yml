@@ -43,6 +43,6 @@ galaxy_info:
   galaxy_tags:
     - zookeeper
 
-  dependencies:
-    - { role: pip }
-    - { role: java }
+dependencies:
+  - { role: pip }
+  - { role: java }
