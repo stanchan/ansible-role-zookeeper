@@ -28,3 +28,6 @@
 
 - name: Setup zookeeper service
   include_tasks: service.yml
+
+- name: Wait for zookeeper services
+  include_tasks: wait.yml

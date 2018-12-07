@@ -1,15 +1,15 @@
 ---
 # defaults file for zookeeper
 ansible_host_ip_force_update: yes
+systemd_service_dir: /etc/systemd/system
+java_install: yes
+
 zookeeper_clean: no
 zookeeper_required_packages:
   - python-dev
   - python-setuptools
   - unzip
 
-java_home: "/usr/lib/jvm/java-8-oracle"
-
-systemd_service_dir: /etc/systemd/system
 zookeeper_service_name: zookeeper
 zookeeper_syslog_id: "{{ zookeeper_service_name }}"
 zookeeper_time_start_sec: 'infinity'
@@ -72,7 +72,7 @@ zookeeper_jmx_ssl: 'false'
 zookeeper_jmx_log_disable: 'true'
 
 zookeeper_jmx_exporter_deploy: no
-zookeeper_jmx_exporter_port: 9081
+zookeeper_jmx_exporter_port: 9404
 jmx_exporter_version: 0.3.1
 jmx_exporter_agent_jar: "jmx_prometheus_javaagent-{{ jmx_exporter_version }}.jar"
 jmx_exporter_agent_jar_url: "http://central.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/{{ jmx_exporter_version }}/{{ jmx_exporter_agent_jar }}"
@@ -137,7 +137,4 @@ jmx_exporter_whitelist:
   - "java.lang:type=Threading"
 
 jmx_exporter_zk_whitelist:
-  - "org.apache.ZooKeeperService:name0=*"
-  - "org.apache.ZooKeeperService:name0=*,name1=*"
-  - "org.apache.ZooKeeperService:name0=*,name1=*,name2=*"
-
+  - "org.apache.ZooKeeperService:*"
