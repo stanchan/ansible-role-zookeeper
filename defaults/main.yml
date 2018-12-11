@@ -21,7 +21,7 @@ zookeeper_user: zookeeper
 zookeeper_group: zookeeper
 #zookeeper_group_id: null
 zookeeper_open_files: 65356
-zookeeper_nproc: 8192
+zookeeper_nproc: 65356
 
 zookeeper_version: 3.4.13
 zookeeper_package_file: "zookeeper-{{ zookeeper_version }}.tar.gz"
