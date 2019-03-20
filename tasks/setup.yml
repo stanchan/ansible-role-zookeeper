@@ -2,13 +2,13 @@
 - name: Create zookeeper group
   group:
     name: "{{ zookeeper_group }}"
-    gid: "{{ zookeeper_group_id | default(omit) }}"
+    gid: "{{ zookeeper_group_id | d(omit) }}"
     state: present
 
 - name: Create zookeeper user
   user:
     name: "{{ zookeeper_user }}"
-    uid: "{{ zookeeper_user_id | default(omit) }}"
+    uid: "{{ zookeeper_user_id | d(omit) }}"
     state: present
     comment: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"

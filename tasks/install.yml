@@ -12,8 +12,8 @@
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
     checksum: "{{ zookeeper_release_checksums[zookeeper_package_file] }}"
-    validate_certs: "{{ zookeeper_validate_certs | default(omit) }}"
-    force: "{{ zookeeper_force_download | default ('no') }}"
+    validate_certs: "{{ zookeeper_validate_certs | d(omit) }}"
+    force: "{{ zookeeper_force_download | d('no') }}"
 
 - name: Deploy zookeeper package
   unarchive:
