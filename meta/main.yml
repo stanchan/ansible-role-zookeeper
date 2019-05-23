@@ -44,5 +44,5 @@ galaxy_info:
     - zookeeper
 
 dependencies:
-  - { role: pip }
-  - { role: java }
+  - role: pip
+  - role: java

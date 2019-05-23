@@ -23,13 +23,14 @@ zookeeper_group: zookeeper
 zookeeper_open_files: 65356
 zookeeper_nproc: 65356
 
-zookeeper_version: 3.4.13
+zookeeper_version: 3.4.14
 zookeeper_package_file: "zookeeper-{{ zookeeper_version }}.tar.gz"
 zookeeper_package_url: "http://apache.mirrors.lucidnetworks.net/zookeeper/zookeeper-{{ zookeeper_version }}/{{ zookeeper_package_file }}"
 zookeeper_validate_certs: yes
 zookeeper_force_deploy: no
 zookeeper_release_checksums:
   zookeeper-3.4.13.tar.gz: "sha256:7ced798e41d2027784b8fd55c908605ad5bd94a742d5dab2506be8f94770594d"
+  zookeeper-3.4.14.tar.gz: "sha256:b14f7a0fece8bd34c7fffa46039e563ac5367607c612517aa7bd37306afbd1cd"
 
 zookeeper_home: /opt/zookeeper
 zookeeper_release_root: "{{ zookeeper_home }}/releases"
